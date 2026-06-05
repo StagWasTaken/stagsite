@@ -75,6 +75,18 @@ As with any problem, moderation is key. For many tasks natural language is still
       </div>
     </div>
   </div>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      setTimeout(() => {
+        document.querySelectorAll('pre, code').forEach(el => {
+          el.style.whiteSpace = 'pre-wrap';
+          el.style.wordBreak = 'break-word';
+          el.style.overflowX = 'hidden';
+          el.style.maxWidth = '100%';
+        });
+      }, 500);
+    });
+  </script>
   <script src="https://cdn.jsdelivr.net/gh/MarketingPipeline/Markdown-Tag/markdown-tag.js"></script>
   </body>
 </html>
