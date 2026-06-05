@@ -26,10 +26,20 @@ pre {
   word-break: break-word !important;
   overflow-x: hidden !important;
   max-width: 100% !important;
+    background-color: #1a1a1a;
+    border-radius: 6px;
+    padding: 12px;
+    text-align: left;
 }
 
 md {
   display: block;
   max-width: 100%;
   overflow: hidden;
+}
+
+code {
+  background-color: #1a1a1a;
+  border-radius: 3px;
+  padding: 2px 4px;
 }
