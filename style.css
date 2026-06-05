@@ -9,18 +9,21 @@ body {
   box-sizing: border-box;
 }
 
-    .box {
-      background-color: #1e5c2f;
-      border: 2px solid white;
-      border-radius: 15px;
-      padding: 20px;
-      width: 800px;
-      text-align: center;
-      color: white;
-    }
+.box {
+  background-color: #1e5c2f;
+  border: 2px solid white;
+  border-radius: 15px;
+  padding: 20px;
+  width: 800px;
+  text-align: center;
+  color: white;
+  overflow: hidden;
+  box-sizing: border-box;
+}
 
-    pre {
-      overflow-x: auto;
-      white-space: pre-wrap;
-      word-break: break-word;
-    }
+pre, code {
+  white-space: pre-wrap;
+  word-break: break-word;
+  max-width: 100%;
+  overflow-x: hidden;
+}
