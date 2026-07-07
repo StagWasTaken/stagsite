@@ -38,21 +38,20 @@ md {
   overflow: hidden;
 }
 
-md, github-md {
-    --link-color: #8ab4f8;
+md a,
+github-md a {
+  color: #8ab4f8;
+  text-decoration: underline;
 }
 
-body md a,
-body github-md a,
-a[href] {
-    color: #8ab4f8 !important;
-    text-decoration: underline !important;
+md a:visited,
+github-md a:visited {
+  color: #8ab4f8;
 }
 
-body md a:hover,
-body github-md a:hover,
-a[href]:hover {
-    color: #c2e7ff !important;
+md a:hover,
+github-md a:hover {
+  color: #c2e7ff;
 }
 
 code {
