@@ -1,0 +1,42 @@
+name: Update sitemap
+
+on:
+  push:
+    branches: [main]
+    # Only bother running when the set of pages could have changed.
+    paths:
+      - "**/*.html"
+      - "scripts/generate-sitemap.mjs"
+  workflow_dispatch: {} # lets you trigger it manually from the Actions tab
+
+permissions:
+  contents: write
+
+jobs:
+  sitemap:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repo
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # full history so `git log` per-file dates work
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Generate sitemap.xml
+        run: node scripts/generate-sitemap.mjs
+
+      - name: Commit changes if sitemap.xml changed
+        run: |
+          if git diff --quiet -- sitemap.xml; then
+            echo "sitemap.xml is already up to date."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add sitemap.xml
+          git commit -m "chore: update sitemap.xml [skip ci]"
+          git push
