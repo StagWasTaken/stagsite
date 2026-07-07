@@ -38,6 +38,17 @@ md {
   overflow: hidden;
 }
 
+md a, github-md a {
+    color: #8ab4f8;
+    text-decoration: underline;
+    transition: color 0.2s ease;
+}
+
+md a:hover, github-md a:hover {
+    color: #c2e7ff;
+    text-decoration: underline;
+}
+
 code {
   background-color: #1a1a1a;
   border-radius: 3px;
