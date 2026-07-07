@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html>
+<head> <script type="text/javascript">
+    (function(c,l,a,r,i,t,y){
+        c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
+        t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
+        y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
+    })(window, document, "clarity", "script", "x2gj8szebf");
+</script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>On AI-Powered Ontology</title>
+    <link href="/stagsite/style.css" rel="stylesheet" type="text/css" media="all">
+    <link href="/stagsite/stars.css" rel="stylesheet" type="text/css" media="all">
+</head>
+<body>
+<div class="box">
+    <div style="display:flex; flex-direction:column; align-items:center; margin:0 auto 25px;">
+        <h1 style="margin:0 0 20px 0;">On AI-Powered Ontology (07/07/26)</h1>
+        <div class="box" style="width: 760px; background: grey; ">
+            <md>
+                ## Table of contents
+                - Preface
+                - My facial recognition project
+                - Surveillance and Moravec's Paradox
+                - Ontology
+                - Making Sense
+                - Advice for certain groups
+                - Closing Remarks
+
+
+                ### Preface
+
+                AI is certainly the centre of hype at the moment. With AI, many small tasks can be automated, obviously. Perhaps the most significant consequence of the technology before "superintelligence" or "AGI" is reached is that of minimal human involvement in the intelligence space. One can hire a million GPUs easier than a million analysts.
+
+                In this article I will present a potential architecture for Ontology and discuss a number of potential consequences and accelerants. This article is naturally quite technical in nature, and geared for the CompSci space and Intelligence Community (IC), rather than a layman. Furthermore, I have minimal knowledge out side of intelligence analysis, and igitur building foreign policy is heavily neglected.
+
+                Alex Karp, CEO of Palantir, describes ontology as what `translates theory into action.` For the purposes of this article, I'll loosely give ontology a working definition of  `turning things we know (data) into things we understand (knowledge)`. The focus of the article is largely ontology regarding abstract and loosely correlated data. This work is largely inspired by my understanding of how Palantir Foundry works, though their architecture is largely classified and I have never had hands-on access to any Palantir operating system. Many goals however are shared, namely Ontology,  mass-ingestion of messy data, and hyper-scaling on copies of that data.
+
+                Below is a list of working theses I will use throughout my writing. These are not necessarily fact, and I will not nearly attempt to prove them. These are to be treated as discussion points.
+                1. Surveillance is practical, and we can maximize data collection in the real world
+                2. [Moravec's Paradox](https://en.wikipedia.org/wiki/Moravec%27s_paradox) will largely be solved by humanoid robots and sensors
+                3. The understanding of physics in LLMs is critical to autonomous Ontology
+                4. High level data leads to higher level data
+
+                When researching for this article I reached out to former Chief of Counterterrorist Operations and whistleblower of the CIA, John Kiriakou. His response email is largely apropos to writing about the IC in this article:
+                ```
+                From: **JOHN/C KIRIAKOU** <jkiriakou@me.com>
+                Date: Mon, Jul 6, 2026 at 5:27 PM
+                Subject: Re: Request for comment
+                To: *Redacted* Stag <stag2056@gmail.com>
+
+
+
+                Hello, *Redacted*.
+
+                SDRs in countries that are hostile to the US (Russia, China, Cuba, etc.) have always been difficult to work in.  Think body heat detectors, tracking devices, and even air surveillance/drones.  Now add AI and facial recognition software.  It’s not unusual for an officer to have to do a six- or eight-hour SDR.  Alternatively, when the source is able to travel, a meeting would have to be held in a different country.  That’s actually pretty common.
+                ```
+
+                ### Facial Recognition
+
+                One of my brief 2-week-projects was a facial recognition database. This was in part inspired by Clearview and Pimeyes. With only cheap and archaic hardware I could turn millions of people into vectors. With my GPU (only 2.14 TFLOPS) I could process 150 images/second in a virtual machine (Innsight buffalo_s).
+
+                My data workflow was incredibly messy. I had many separate collectors/uploaders:
+                1. Pinterest (selfie tags)
+                2. Reddit  (/new posts in face-required subreddits)
+                3. Youtube thumbnails (automatically crawling from reccomendations)
+                4. Kaggle and Huggingface datasets
+
+                All of these scripts saved to simple sqlite databases (db), with a boolean of whether they had been uploaded yet. I had separate scripts to enter those db files and upload pictures to my ingestion server, alongside a memorandum of where the pictures were sourced from.
+
+                Server side was an incredible mess. Uploaded images were compressed on intake saved to a directory as standalone files, after being decoded from Base64, and having created a json file with the memorandum. Then, a separate script collected the image file json pairs, conducted the scan with buffalo_s, and saved the compressed vector, image, and memorandum in a giant sqlite db.
+
+                A separate server script served a simple frontend to search a picture for similar faces in the db. Initially, I used cosine similarity only, which worked well for the first 200,000 images, before things drastically slowed down. Facebook created this elegant algorithm called [FAISS](https://github.com/facebookresearch/faiss), which significantly reduced the time to find similar faces. However, even this reached scaling limits, when at around 100 million images, building a FAISS index took over an hour to complete.
+
+                I reached a few conclusions from this:
+                1. Ingestion servers are a good route. It is nice to not have direct scrapers inside the codebase in an OOP way. It also affords significant more freedom in how we collect data, as it could be on any machine in any language, only requiring http requests
+                2. Facial Scans are very practical. Surprisingly, accuracy is very good even at low resolutions, with some webp/jpg compressions.
+                3. While the memorandums were good for researching individual photos, it was really just text that I formatted different in each collector script. It would be a pain in the ass to turn the memorandums into properties again, and therefore one could not really perform any analysis on a face cluster
+
+                ### On the practicality of surveillance and Moravec's Paradox
+
+                In my facial recognition project, I learned hands-on the ease in making these large facial databases. It is largely a matter of scaling compute. My limit on consumer hardware (A budget GPU from 10 years ago, and a 1tb NVME SSD) was 400 million images. If one had a single picture of every person on the planet, you could make a great database with only 8 billion images. Clustering and similarities would be an issue with only a single picture, but you could match a picture of a person on the street to only a few hundred results, on probably less than $2500 of hardware. I think however, collection of data and ontology are equally important in this domain.
+
+                Much of this article will focus on the feasibility and impact of ontology, but data for surveillance is also feasible. Flock safety for example, has nearly 100,000 nodes with cameras and microphones, analyzing the faces, skin, and license plates of those who pass by. That system can scale, but has narrow data. Collecting narrow data is overwhelmingly feasible now, and analysis thereof is fairly easy, because it is of course narrow.
+
+                You can buy a sensor for an innumerable amount of properties about our world now, often times small and easily interfaceable with cheap microcontrollers. Collected data is also feasible to transmit. Wifi and Cellular is common of course, but lower frequency radio is also very useful. 915mhz and 433mhz are inconspicous (ISM bands) and travel far, especially in periods of topspheric ducting. If one does not mind being overt, they could put thousands of watts in a shortwave radio and be received globally. If remaining covert, there are many sattelite communication networks like Iridium and now Starlink. The point is that you can measure many things and install them globally.
+
+                A metaphor I will reuse is one I picked from Roman Yampolskiy along the lines of:
+                `A dog cannot understand the ways you could kill it. He can image being stabbed or bitten, but a dog has no understanding of being shot.`
+                He uses this frequently to describe the magnitudes of intelligence of superintelligent AI. However I think this also applies to both the collective power of human engineering, and the engineering that is extremely classified. I am certainly not knowledgeable enough on many fields to imagine all the things we could collect. But some examples for food of thought:
+
+                - Sounds from the ocean (Vessels, animals, sonar interception and triangulation)
+                - The position of everything that moves on the surface (Synthetic Aperture Radar)
+                - Optical vision even at night, by reflecting sunlight with space mirrors [ReflectOrbital](https://www.reflectorbital.com/)
+                - 3D Maps of the world surface (If you have apple maps, you can already tilt to see inside of buildings with angles, though low resolution)
+                - Detecting and isolating heartbeats 65 km away (Ghost Murmur)
+                - All of the stuff in NSA the PRISM
+
+                Overall, you can collect vast amounts of messy data all around the world.
+
+                Usable data, both shared and independent from the human experience, will be immensely powerful in the next generation of Frontier LLMs. I reached out to Hacker-in-residence Harpreet Sahota from the physical AI company Voxel51:
+                ```
+                As humanoid robots are introduced, to what extent do you think frontier models will benefit from data collected in these bodies, in regards to performance in sensorimotor, spatial reasoning, and visualisation tasks, when they are responding purely to text-input-output modalities, without direct access to the physical world (i.e., operating as just a chatbot, without access to a body in the physical world)?
+
+                thanks for reaching out. my honest take: embodied data from humanoid robots will absolutely help text-only frontier models, even ones that never touch a body. the reason is that spatial reasoning, object permanence, and "what happens if i push this" style physics aren't separate skills from language, they're just another modality of the same underlying world model. once you train on video, proprioception, and action-outcome pairs from robots moving through real spaces, you're forcing the model to build internal representations of geometry, gravity, and causality that are richer than anything text alone can teach. those representations don't stay locked to the robot's body, they get distilled into the shared latent space the model uses for everything, including a plain chatbot answering "how many oranges fit in this box." so a chatbot with zero physical access still benefits, because its "brain" was shaped by data that came from a body, even if its own outputs never do. curation matters a lot here though, the quality and diversity of embodied data is what determines whether that transfer is shallow pattern matching or genuine spatial competence.
+                ```
+
+                This is beautifully explained, but here are some of my own ideas to add:
+                The innate understanding of physics and the world does not end with human perceptions. A humanoid robot could be equipped with more than an optical camera: with other sensors like infrared, ultraviolet, or even a radio telescope. A LLM's vision input modalities could include way more than visible light, leading it to excel way beyond humans at certain physical tasks.
+
+                An important nuance however:
+                We will likely not model the entire world in our lifetime. One can equate it to the Kardashev scale, where:
+                A Type I civilization (planetary) is able to index all of it planet's matter and current velocity thereof.
+                A Type II civilization (stellar)  is able to index all of a star's matter and current velocity thereof.
+                A Type III civilization (galactic)  is able to index all of it galaxy's matter and current velocity thereof.
+                (and probably all of the quantum junk below the surface of this)
+                Therefore, we will likely not be able to have Ontology at the level of the butterfly effect within our lifetime. Though, our ability to make predictions will increase as both surveillance and ontology improve. We cannot yet simulate nor read minds yet, but we can at least predict psychologically.
+
+                ### Ontology
+
+                The most practical approach to Ontology seems to be layering. Raw data creates a wide scope and is too vague to properly query. An LLM with an infinite context window is not feasible. A human brain can't learn everything. Therefore, data needs to be narrowed down into higher level data.
+
+                With a hyper-scaling ontology, there would be an indescribable amount of data, so an agent cannot just parse everything.
+
+                So based on this I propose a sample architecture:
+                ![[tech.png]]
+
+                The workflow is as follows:
+                1. All incoming data hits an ingestion server, and is stored raw in a database, alongside an ingestion format id. The data is marked as not processed, and send to the processing queue.
+                2. Ingestion formats have assigned processors. For example, a SMS message could be a type of data. The processor would create a SMS class node in the neo4j database, and assign properties like the path of cell towers it followed, sender, recipient, contents, timestamp etc. The data in the raw database is marked processed, and the node is marked not dirty. If the code of a processor is changed, the node and all dependent derivations are marked dirty one-by-one up the chain, to be sent to the processing and deriving queue.
+                3. Derivative processors watch certain data classes and create higher level data as that data is added or changed. A derivative processor might create a data node that shows the time of day to text frequency of all SMS messages, based on the timestamps of all SMS nodes. A derivative processor might create a total cell-communications time of day-activity graph based on that SMS time distribution graph and a Mobile Data and Call time distribution graph, that updates every time one of those 3 graphs updates. Derivatives can add new nodes, create relationships, and attach properties to nodes
+
+                This basic outline is fairly novel, just a graph database with processing in the workflow and updating data when relevant. However, with LLMs this system can scale dramatically. Instead of manually deploying processors written by hand, an AI can automatically test, write, and update processors for a certain ingestion format, and deploy derivative processors. For problems the LLM cannot solve with equations we already know, the LLM can train and test different neural networks on the fly and either add that network or create elegant equations if it finds a pattern. The more input modalities that an LLM understands, the easier it can create relevant and accurate processors.
+
+                With enough compute, AI agents can scrape crazy amount of data from the internet and from real life sensors, and automatically create new ingestion formats and processors. In the architecture, a processor is really just a script to be executed. You can fit anything you want inside. You could have a processor that adds an image from a drone to the db along side the text response of an LLM to the question "What do you see in this image". You could fit a facial recognition model on a processor for new social media pictures that stores the face vectors as a property. The amount of processing you could do is limitless, and brings back the dog analogy of not being able to see the capabilities.
+
+                Importantly, there should be AI agents at every layer creating derivative processors to a nice pool of information at the top. You cannot condense the entire world into a single data type (I think), but you could expose every node and every data type as an MCP server. At the top you could query an LLM in natural language, whilst agents scour for relevant data at the highest level in the ontology chain. Through the MCP server the LLM could read raw data, read the code of the processor, see the nodes its derived from, look at the relationships attached, etc.
+
+                This is essentially equivalent to Forward Deployed Software Engineers that Palantir pioneered, but performed by AI.
+
+                Note that for an intelligence agency, there would have to be a significant access controls system. I am not smart enough to design this for an Ontology where data is dependent on other data, but the NSA's [DataWave](https://github.com/NationalSecurityAgency/datawave) is an elegant example for a traditional database.
+
+                ### Making Sense
+
+                Ontology is as effective as the quantity and quality of the data, and the architecture behind it. A lot of the useful data in ontology systems is currently digital. Companies like Palantir work to collect and utilize physical data, but projects like Gotham are intensely classified. As more sensors can be consolidated, especially those on humanoid or other physical robots, LLMs will be versed enough in principles they currently struggle with under Moravec's Paradox to handle data being digested.
+
+
+                ### Advice for certain groups
+                #### Intelligence Agencies
+                A significant risk of a unified database like this is that of exfiltration. Cybersecurity is obvious, but protection of datacenters must also be intense. Bollards are pretty obvious, but when working with state-level threat actors, roofs shouldn't be neglected. A helicopter based breach is a decent sized vulnerability for most standard datacenters, let alone what foreign DARPA equivalents have.
+
+                #### Intelligence Operatives
+                Like Kiriakou advised, sources should often be met in friendly soil. Domestic soil (or five eyes soil) is obviously preferred, because one does not need to worry about foreign surveillance nearly as much. Satellite surveillance is rapidly becoming more practical, alongside the rise of road based surveillance systems equivalent to Flock Safety. A vehicle can not really escape SAR technology, but one is afforded much coverage by meeting sources when it is a foggy AND cloudy day, and under a roof.
+
+                Additionally, shorter tours would be beneficial. It is certain that storing data is prioritized before analysis. Store now Analyze later. As ontological architecture improves, the time between an operative working in a country and being recognized as an undeclared part of the IC minimizes quickly.
+
+                #### Privacy Concerned Civillians
+                `¯\_(ツ)_/¯`
+
+                ### Closing Remarks
+                This article is sort of a work in progress and will likely be updated soon. I thank John Kiriakou and Harpreet Sahota deeply for providing comment and their quick response times. Palantir is also a great inspiration.
+            </md>
+        </div>
+    </div>
+</div>
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+      setTimeout(() => {
+        document.querySelectorAll('pre, code').forEach(el => {
+          el.style.whiteSpace = 'pre-wrap';
+          el.style.wordBreak = 'break-word';
+          el.style.overflowX = 'hidden';
+          el.style.maxWidth = '100%';
+        });
+      }, 500);
+    });
+</script>
+<script src="https://cdn.jsdelivr.net/gh/MarketingPipeline/Markdown-Tag/markdown-tag.js"></script>
+</body>
+</html>
