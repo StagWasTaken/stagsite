@@ -42,14 +42,16 @@ md, github-md {
     --link-color: #8ab4f8;
 }
 
-md a, github-md a,
-md::part(link), github-md::part(link) {
+body md a,
+body github-md a,
+a[href] {
     color: #8ab4f8 !important;
-    text-decoration: underline;
+    text-decoration: underline !important;
 }
 
-md a:hover, github-md a:hover,
-md::part(link):hover, github-md::part(link):hover {
+body md a:hover,
+body github-md a:hover,
+a[href]:hover {
     color: #c2e7ff !important;
 }
 
