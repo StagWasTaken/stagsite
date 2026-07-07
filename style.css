@@ -14,7 +14,9 @@ body {
   border: 2px solid white;
   border-radius: 15px;
   padding: 20px;
-  width: 800px;
+  width: 100%;
+  max-width: 800px;
+  margin: 0 auto;
   text-align: center;
   color: white;
   overflow: hidden;
@@ -58,4 +60,19 @@ code {
   background-color: #1a1a1a;
   border-radius: 3px;
   padding: 2px 4px;
+}
+
+md, code {
+  word-break: break-word;
+  overflow-wrap: anywhere;
+}
+
+@media (max-width: 600px) {
+  body {
+    padding: 16px 0;
+  }
+  .box {
+    padding: 12px;
+    border-radius: 10px;
+  }
 }
