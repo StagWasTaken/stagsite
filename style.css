@@ -63,7 +63,7 @@ code {
 }
 
 md, code {
- font-size: 125%;
+ font-size: 115%;
   word-break: break-word;
   overflow-wrap: anywhere;
 }
